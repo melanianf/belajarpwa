@@ -1,6 +1,6 @@
 $(document).ready(function(){
     // inisialisasi API url
-    var url = 'http://my-json-server.typicode.com/talithaizza/belajar-api/mahasiswa';
+    var url = 'https://my-json-server.typicode.com/talithaizza/belajar-api/mahasiswa';
 
     // untuk menampung semua data mahasiswa
     var result='';

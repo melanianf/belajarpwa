@@ -2,33 +2,32 @@ var CACHE_NAME = 'latihan-pwa-cache-v1';
 
 var urlsToCache = [
     '/',
-    '/css/index.css',
+    '/js/main.js',
     '/js/jquery.min.js',
-    '/js/index.js',
-    '/images/ugm.png',
-    '/fallback.json',
-    '/bootstrap/css/bootstrap.min.css',
-    '/bootstrap/js/bootstrap.min.js',
-    '/js/popper.min.js'
+    '/css/main.css',
+    '/images/ugm.png'
 ];
 
 // install cache on browser
-self.addEventListener('install', function(event) {
-    // Perform install steps
+self.addEventListener('install', function (event) {
+    // do install
     event.waitUntil(
         caches.open(CACHE_NAME)
-            .then(function(cache) {
-                // console.log('service worker install.. Opened cache');
+            .then(function (cache) {
+                // cek apakah cache sudah terinstall
+                console.log("service worker do install..");
                 return cache.addAll(urlsToCache);
-            })
-    );
+            }
+        )
+    )
 });
 
-self.addEventListener('activate', function(event) {
+// aktivasi sw
+self.addEventListener('activate', function (event) {
     event.waitUntil(
-        caches.keys().then(function(cacheNames) {
+        caches.keys().then(function (cacheNames) {
             return Promise.all(
-                // delete cache jika versi cache nya berbeda
+                // jika sudah ada cache dgn versi beda maka di hapus
                 cacheNames.filter(function (cacheName) {
                     return cacheName !== CACHE_NAME;
                 }).map(function (cacheName) {
@@ -39,32 +38,32 @@ self.addEventListener('activate', function(event) {
     );
 });
 
-self.addEventListener('fetch', function(event) {
+// fetch cache
+self.addEventListener('fetch', function (event) {
     var request = event.request;
     var url = new URL(request.url);
 
-    // pisah API dengan cache
-    // jika menggunakan data lokal cache
+    /*
+    * menggunakan data local cache
+    * */
     if (url.origin === location.origin){
         event.respondWith(
             caches.match(request).then(function (response) {
-                // jika ada maka tampilkan data dari cache, jika tidak ada maka fetch dari request
+                // jika ada data di cache maka tampilkan data cache, jika tidak maka petch request
                 return response || fetch(request);
             })
-        );
+        )
     } else{
-        // jika menggunakan internet API
+        // internet API
         event.respondWith(
-            // buat cache baru
             caches.open('mahasiswa-cache-v1').then(function (cache) {
                 return fetch(request).then(function (liveRequest) {
-                    cache.put(request,liveRequest.clone());
-                    // nyimpen hasil fetch ke cache name diatas
+                    cache.put(request, liveRequest.clone());
+                    // save cache to mahasiswa-cache-v1
                     return liveRequest;
                 }).catch(function () {
                     return caches.match(request).then(function (response) {
-                        // jika cache kita cek ad isinya maka return response
-                        if (response) return response;  // jika tidak ketemu juga ya ke fallback.json
+                        if (response) return response;
                         return caches.match('/fallback.json');
                     })
                 })
@@ -73,15 +72,12 @@ self.addEventListener('fetch', function(event) {
     }
 
     // event.respondWith(
-    //     caches.match(event.request)
-    //         .then(function(response) {
-    //                 // Cache hit - return response
-    //                 console.log(response);
-    //                 if (response) {
-    //                     return response;
-    //                 }
-    //                 return fetch(event.request);
-    //             }
-    //         )
-    // );
+    //     caches.match(event.request).then(function (response) {
+    //         console.log(response);
+    //         if (response){
+    //             return response;
+    //         }
+    //         return fetch(event.request);
+    //     })
+    // )
 });
