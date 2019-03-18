@@ -83,3 +83,26 @@ self.addEventListener('fetch', function (event) {
     //     })
     // )
 });
+
+
+self.addEventListener('notificationclose', function(n){
+    var notification = n.notification;
+    var primaryKey = notification.data.primaryKey;
+
+    console.log('Closed Notification : ' + primaryKey);
+});
+
+self.addEventListener('notificationclick', function(n){
+    var notification = n.notification;
+    var primaryKey = notification.data.primaryKey;
+    var action = n.action;
+
+    console.log('Notification : ', primaryKey);
+    if(action === 'close'){
+        notification.close();
+    }
+    else{
+        clients.openWindow('https://github.com/melanianf');
+        notification.close();
+    }
+})

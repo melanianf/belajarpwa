@@ -86,6 +86,35 @@ $(document).ready(function () {
             $('#mhs-list').html(result);
         });
     }
+
+    //notification
+    Notification.requestPermission(function (status){
+        console.log('Notif permission status', status);
+    });
+    function displayNotification(){
+        if(Notification.permission === 'granted'){
+            navigator.serviceWorker.getRegistration()
+            .then(function(reg){
+                var options = {
+                    body : 'Ini adalah notifikasi',
+                    icon : 'images/ugm.png',
+                    vibrate : [100,50,100],
+                    data: {
+                        dateOfArrival : Date.now(),
+                        primaryKey: 1
+                    },
+                    actions:[
+                        {action: 'explore', title : 'Kunjungi Situs', icon: 'images/centang.png'},
+                        {action: 'close', title : 'Close Notification', icon : 'images/times.png'},
+                    ]
+                };
+                reg.showNotification('Ini Notifikasi', options)
+            })
+        }
+    }
+    $("#show-notification").on('click', function(){
+        displayNotification();
+    })
 });
 
 if ('serviceWorker' in navigator){
