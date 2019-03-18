@@ -102,7 +102,7 @@ self.addEventListener('notificationclick', function(n){
         notification.close();
     }
     else{
-        clients.openWindow('https://github.com/melanianf');
+        clients.openWindow('http://localhost:8000/');
         notification.close();
     }
 })
